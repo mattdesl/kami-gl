@@ -2,7 +2,7 @@
   "name": "kami-gl",
   "version": "0.0.0",
   "description": "The WebGL components for the Kami rendering framework.",
-  "main": "index.js",
+  "main": ".lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,7 +16,6 @@
     "url": "https://github.com/mattdesl/kami-gl/issues"
   },
   "dependencies": {
-    "gl-matrix": "toji/gl-matrix.git#v2.2.0",
     "jsOOP": "mattdesl/jsOOP"
   },
   "devDependencies": {

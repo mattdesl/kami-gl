@@ -20,13 +20,13 @@
 
 	varying vec2 vTexCoord;
 	uniform sampler2D tex0;
-	uniform float alpha;
+	uniform vec4 colorMod;
+	uniform float time;
 
 	void main() {
-		//final color: return opaque red
-		// gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-		gl_FragColor = texture2D(tex0, vTexCoord);
-		gl_FragColor *= alpha;
+		float f = sin(time*0.25);
+		vec2 coord = vTexCoord * 2.0 + f;
+		gl_FragColor = texture2D(tex0, coord) * colorMod;
 	}
 	</script>
 

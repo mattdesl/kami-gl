@@ -45,7 +45,10 @@ $(function() {
 	shader.setUniformf("alpha", 0.25);
 
 	//create texture from Image (async load)
-	var tex = new Texture(context, "img/bunny.png", onAssetLoaded);
+	var tex = new Texture(context, "img/grass.png", onAssetLoaded);
+	
+	//Note that this only works in WebGL with power-of-two texture sizes.
+	tex.setWrap(Texture.Wrap.REPEAT);
 
 	//make up some vertex data, interleaved with {x, y, u, v}
 	var vertices = new Float32Array([
@@ -88,14 +91,10 @@ $(function() {
 	function onAssetLoaded() {
 		console.log("Texture loaded: " + tex);
 		
-		//Shader values are lost on context loss.
-		//Maybe this will be managed too in the future...
-		shader.bind();
-		shader.setUniformf("alpha", 0.5);
-		
-
 		requestAnimationFrame(render);
 	}
+
+	var time = 0;
 
 
 	function render() {
@@ -112,8 +111,20 @@ $(function() {
 		gl.clearColor(0, 0, 0, 0);
 		gl.clear(gl.COLOR_BUFFER_BIT);
 		
+		
 		tex.bind();
 		shader.bind();
+
+		//Keep in mind that we don't necessarily
+		//need to call this every frame. However,
+		//on context loss these values are reset. So
+		//this is an easy way to avoid dealing with that.
+		shader.setUniformi("tex0", 0);		
+		
+		var val = Math.sin(time+=0.05) / 2 + 0.5;
+		shader.setUniformf("colorMod", 1.0, val, 1.0, 1.0);
+		shader.setUniformf("time", time);
+
 		vbo.bind(shader);
 		vbo.draw(gl.TRIANGLES, 6, 0);
 		vbo.unbind(shader);

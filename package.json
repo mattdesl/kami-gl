@@ -16,6 +16,7 @@
     "url": "https://github.com/mattdesl/kami-gl/issues"
   },
   "dependencies": {
+    "gl-matrix": "toji/gl-matrix.git#v2.2.0",
     "jsOOP": "mattdesl/jsOOP"
   }
 }

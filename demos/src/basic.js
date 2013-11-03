@@ -45,7 +45,7 @@ $(function() {
 	shader.setUniformf("alpha", 0.25);
 
 	//create texture from Image (async load)
-	var tex = new Texture(context, "img/grass.png", onAssetLoaded);
+	var tex = new Texture(context);
 	
 	//Note that this only works in WebGL with power-of-two texture sizes.
 	tex.setWrap(Texture.Wrap.REPEAT);
@@ -86,26 +86,48 @@ $(function() {
 	//set the mesh to "dirty" so that it gets uploaded 
 	//this write-only property sets verticesDirty and indicesDirty to true
 	vbo.dirty = true;
-	
-	//Called when textures have been loaded to re-start the render loop
-	function onAssetLoaded() {
-		console.log("Texture loaded: " + tex);
+
+
+
+	var time = 0, ready = false;	
+
+	//start the asset loading
+	loadAssets();
 		
-		requestAnimationFrame(render);
+	//start the render loop
+	requestAnimationFrame(render);
+
+	function loadAssets() {
+		//Here would be an ideal place for an asset manager
+		//However, this is outside the scope of kami-gl.
+		//Instead, you should look at kami's core for that.
+
+		//async load the image
+		var img = new Image();
+		img.onload = function() {
+			tex.uploadImage(img);
+			ready = true;
+		}
+		img.src = "img/grass.png";
 	}
 
-	var time = 0;
+	//listen for context loss events, and stop rendering
+	//until image is re-loaded...
+	context.lost.add(function() {
+		ready = false;
+	});
 
+	context.restored.add(function() {
+		//once context is ready again, we can load
+		//the assets 
+		loadAssets();
+	});
 
 	function render() {
-		//cancel the render frame if context is lost/invalid
-		//on context restore the image will be re-loaded and the 
-		//render frame started again 
-		//(this will be made cleaner with a high-level AssetManager)
-		if (!context.valid) 
-			return;
-
 		requestAnimationFrame(render);
+
+		if (!ready) 
+			return;
 
 		var gl = context.gl;
 		gl.clearColor(0, 0, 0, 0);
